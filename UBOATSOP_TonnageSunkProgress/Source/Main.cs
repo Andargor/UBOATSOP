@@ -38,6 +38,14 @@ public class UBOATSOP_TonnageSunkProgress : BackgroundTaskBase
         try
         {
             AddListeners();
+
+            /*
+            var progress = new LocalizedString("UI/Progress");
+            var tonnage = new LocalizedString("Messages/Destroyed", 6666 + " GRT");
+
+            Debug.Log($"UBOATSOP_TonnageSunkProgress MESSAGE {progress}: {tonnage}");
+            */
+
             firstUpdate = false;
 
         } catch (Exception ex)
@@ -86,7 +94,10 @@ public class UBOATSOP_TonnageSunkProgress : BackgroundTaskBase
         {
             if (playerCareer != null)
             {
-                AddJournalEntry($"Progress: {playerCareer.TonnageSunk} GRT sunk.");
+                var progress = new LocalizedString("UI/Progress");
+                var tonnage = new LocalizedString("Messages/Destroyed", playerCareer.TonnageSunk.ToString() + " GRT");
+                //AddJournalEntry($"Progress: {playerCareer.TonnageSunk} GRT sunk.");
+                AddJournalEntry($"{progress}: {tonnage}");
             }
 
         } catch (Exception ex)
