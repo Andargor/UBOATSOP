@@ -104,7 +104,7 @@ public class UBOATSOP_AircraftCrashDive : BackgroundTaskBase
                 var aircraft = (Aircraft)entity;
                 //var id = aircraft.GetInstanceID();
                 Debug.Log($"UBOATSOP_AircraftCrashDive ShipOnObservationAdded *** AIRCRAFT {aircraft.Name} ActiveEngines {aircraft.ActiveEngines} enabled {aircraft.enabled} FoldedUp {aircraft.FoldedUp} HasWorkingPropellers {aircraft.HasWorkingPropellers} isActiveAndEnabled {aircraft.isActiveAndEnabled} IsAwaken {aircraft.IsAwaken}");
-                if (!playerShipProxy.CurrentShip.Docked && !playerShipProxy.CurrentShip.SubmergedOrGoingToSubmerge && !aircraft.FoldedUp)
+                if (!playerShipProxy.CurrentShip.Docked && !playerShipProxy.CurrentShip.SubmergedOrGoingToSubmerge && !aircraft.FoldedUp && !playerShipProxy.CurrentShip.Alarmed)
                 {
                     CrashDive(DepthPreset.MaxSafeDepth);
                 }
