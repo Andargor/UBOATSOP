@@ -67,9 +67,7 @@ public class UBOATSOP_TurnOnPump : BackgroundTaskBase
 
     private static void TurnOnPump()
     {
-        if (userSettings.GameplaySettings.realisticBilge
-                && playerShipProxy != null
-                && playerShipProxy.CurrentShip != null
+        if (playerShipProxy != null && playerShipProxy.CurrentShip != null
                 )
         {
             TrimPump equipment = playerShipProxy.CurrentShip.GetEquipment<TrimPump>("Trim Pump");
