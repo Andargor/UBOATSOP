@@ -197,7 +197,9 @@ public class UBOATSOP_TurnOnRedLight : BackgroundTaskBase
                                     for (int index2 = actions.Count - 1; index2 >= 0; --index2)
                                     {
                                         if (actions[index2] is SwitchLightAction switchLightAction)
-                                            actionBuffer.Add(switchLightAction);
+                                        {
+                                            if (switchLightAction.Preset != LightController.Preset.Alarm) actionBuffer.Add(switchLightAction);
+                                        }
                                     }
                                     for (int index3 = actionBuffer.Count - 1; index3 >= 0; --index3)
                                         playerCrew.GlobalActionQueue.Remove((CharacterAction)actionBuffer[index3]);
@@ -260,7 +262,9 @@ public class UBOATSOP_TurnOnRedLight : BackgroundTaskBase
                                     for (int index2 = actions.Count - 1; index2 >= 0; --index2)
                                     {
                                         if (actions[index2] is SwitchLightAction switchLightAction)
-                                            actionBuffer.Add(switchLightAction);
+                                        {
+                                            if (switchLightAction.Preset != LightController.Preset.Surface) actionBuffer.Add(switchLightAction);
+                                        }
                                     }
                                     for (int index3 = actionBuffer.Count - 1; index3 >= 0; --index3)
                                         playerCrew.GlobalActionQueue.Remove((CharacterAction)actionBuffer[index3]);
