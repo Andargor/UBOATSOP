@@ -160,7 +160,11 @@ public class UBOATSOP_TurnOnRedLight : BackgroundTaskBase
         try
         {
 
-            if (lightingIterationsRemaining-- > 0) return;
+            if (lightingIterationsRemaining-- > 0)
+            {
+                playerCrew.Skipper.StopSpeaking();
+                return;
+            }
 
             lightingIterationsRemaining = 0;
 
@@ -208,6 +212,7 @@ public class UBOATSOP_TurnOnRedLight : BackgroundTaskBase
                                     Debug.LogException(ex);
                                 }
                                 playerCrew.GlobalActionQueue.Add(actionsList[index1].Action.Duplicate(component));
+                                playerCrew.Skipper.StopSpeaking();
                                 lightingIterationsRemaining = NUM_UPDATE_ITERATIONS;
                             }
                         }
@@ -225,7 +230,11 @@ public class UBOATSOP_TurnOnRedLight : BackgroundTaskBase
         try
         {
 
-            if (lightingIterationsRemaining-- > 0) return;
+            if (lightingIterationsRemaining-- > 0)
+            {
+                playerCrew.Skipper.StopSpeaking();
+                return;
+            }
 
             lightingIterationsRemaining = 0;
 
@@ -273,6 +282,7 @@ public class UBOATSOP_TurnOnRedLight : BackgroundTaskBase
                                     Debug.LogException(ex);
                                 }
                                 playerCrew.GlobalActionQueue.Add(actionsList[index1].Action.Duplicate(component));
+                                playerCrew.Skipper.StopSpeaking();
                                 lightingIterationsRemaining = NUM_UPDATE_ITERATIONS;
                             }
                         }

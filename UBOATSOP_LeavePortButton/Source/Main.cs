@@ -60,34 +60,7 @@ public class UBOATSOP_LeavePortButton : BackgroundTaskBase
                 HideLeavePortButton();
                 UpdateLastDock();
 
-                /*
-                var instance = InjectionFramework.Instance;
-                List<DeepMonoBehaviour> behaviors = new List<DeepMonoBehaviour>();
-                instance.GetSingletons<DeepMonoBehaviour>(behaviors);
-
-                foreach (var behavior in behaviors)
-                {
-                    Debug.Log($"BEHAVIOR {behavior} {behavior.GetType()} PARENT {behavior.GetParentEntity()}");
-                }
-                */
             }
-
-            /*
-            var button = GameObject.FindFirstObjectByType<LeavePortButtonUI>();
-
-            if (button != null)
-            {
-                Debug.Log($"BUTTON {button} {button.gameObject.scene} {button.GetParentEntity()}");
-            }
-            */
-
-
-            //Debug.Log($"UBOATSOP_LeavePortButton DoUpdate BUTTON {button} ACTIVE {button?.isActiveAndEnabled}");
-            //sandboxSceneOrigin.
-
-            //scene.GetRootGameObjects(this.gameObjectsBuffer);
-            //var instance = DWS.Common.InjectionFramework.Instance;
-
 
             GetLeavePortButton();
             ShowLeavePortButton();
@@ -126,8 +99,6 @@ public class UBOATSOP_LeavePortButton : BackgroundTaskBase
             playerShipProxy.CurrentShip.AlarmStarted -= ShipOnAlarmStarted;
             playerShipProxy.CurrentShip.AlarmStarted += ShipOnAlarmStarted;
 
-            //resourceManager.ObjectInstantiated -= RMObjectInstantiated;
-            //resourceManager.ObjectInstantiated += RMObjectInstantiated;
 
         } catch (Exception ex)
         {
@@ -164,28 +135,6 @@ public class UBOATSOP_LeavePortButton : BackgroundTaskBase
         }
     }
 
-    public static void dumpBehaviors()
-    {
-        /*
-        var instance = InjectionFramework.Instance;
-        List<DeepMonoBehaviour> behaviors = new List<DeepMonoBehaviour>();
-        instance.GetSingletons<DeepMonoBehaviour>(behaviors);
-
-        foreach (var behavior in behaviors)
-        {
-            Debug.Log($"+++dumpBehaviors {behavior} {behavior.GetType()}");
-
-
-            if (behavior is StoryPlayerUI)
-            { 
-                storyPlayerUI = (StoryPlayerUI)behavior;
-                Debug.Log($"+++dumpBehaviors >> ASSIGNED storyPlayerUI {storyPlayerUI}");
-            }
-        }
-        */
-        //instance.GetInstance<DeepMonoBehaviour>();
-    }
-
     public static void RMObjectInstantiated(UnityEngine.Object obj, InstantiationFlags flags)
     {
         Debug.Log($"== EVENT RMObjectInstantiated OBJ {obj} NAME {obj?.name} CLASS {obj.GetType()}");
@@ -195,19 +144,6 @@ public class UBOATSOP_LeavePortButton : BackgroundTaskBase
         var button = GlobalPool.FindFirstObjectByType<LeavePortButtonUI>();
         Debug.Log($"UBOATSOP_LeavePortButton dumpPool {button}");
 
-        //var b = resourceManager?.GetObject("Leave Port Button");
-        //Debug.Log($"UBOATSOP_LeavePortButton dumpPool RM 1 OBJ {b} LP {(LeavePortButtonUI)b} NAME {((LeavePortButtonUI)b)?.name}");
-
-        //ResourceManager.
-        //resourceManager.
-        //GlobalPool.Instance.GetPrefabInstance(;
-
-        //GlobalPool.Instance.
-        //DynamicPrefabLink.
-        //GameObjectPrefab
-
-        //UBOAT.Game.Scene.Items.DockPoint.GetRandomDockPoint(this.targetPort.SpawnedEntity.transform, this.ship.Blueprint.Type.Category, true) : (UBOAT.Game.Scene.Items.DockPoint) null;
-
     }
 
     private static LeavePortButtonUI GetLeavePortButton()
@@ -216,78 +152,7 @@ public class UBOATSOP_LeavePortButton : BackgroundTaskBase
         return leavePortButton;
     }
 
-    private static LeavePortButtonUI GetLeavePortButtonXXX(bool create = false)
-    {
-        /*
-        Debug.Log($"UBOATSOP_LeavePortButton GetLeavePortButton GAMEUI {gameUI} MODE {gameUI.CurrentMode}");
-        Debug.Log($"UBOATSOP_LeavePortButton GetLeavePortButton TARGET {playerShipProxy?.CurrentShip?.CurrentQuickTravelTarget} TYPE {playerShipProxy?.CurrentShip?.CurrentQuickTravelTargetType}");
-
-        //gameUI.MainCanvas
-        //if (create && button == null) sandbox.gameObject.AddComponent<LeavePortButtonUI>();
-        //button.gameObject.SetActive(true);
-
-        LeavePortButtonUI button = gameUI.gameObject.GetComponentInChildren<LeavePortButtonUI>();
-        var scene = button?.gameObject?.scene;
-
-        var parentEntity = button?.GetParentEntity();
-        var transform = button?.gameObject?.transform;
-        var parent = transform?.parent;
-        var canvasGroup = button?.GetComponent<CanvasGroup>();
-
-        //canvasGroup.
-        //transform.
-
-        Debug.Log($"UBOATSOP_LeavePortButton GetLeavePortButton BUTTON {button} NAME {button?.name} OBJNAME {button?.gameObject?.name} LAYER {button?.gameObject?.layer} SCENE {button?.gameObject?.scene} ACTIVE {button?.isActiveAndEnabled} TAG {button?.gameObject?.tag} ENABLED {button?.enabled} AWAKEN {button?.IsAwaken} DESTROYED {button?.IsBeingDestroyed} CANVAS {canvasGroup} PARENTENTITY {parentEntity} TRANSFORM {transform} PARENT {parent}");
-
-
-        //dumpLeavePortButtonUI();
-        dumpBehaviors();
-
-        LeavePortButtonUI button2 = storyPlayerUI?.GetComponentInChildren<LeavePortButtonUI>();
-        Debug.Log($"UBOATSOP_LeavePortButton GetLeavePortButton storyPlayerUI BUTTON {button2} NAME {button2?.name}");
-
-        var button3 = InjectionFramework.Instance.GetInstance<LeavePortButtonUI>();
-        Debug.Log($"UBOATSOP_LeavePortButton GetLeavePortButton Instance BUTTON {button3} NAME {button3?.name}");
-
-
-
-
-
-        dumpPool();
-
-
-        */
-
-
-
-        //var button3 = GameObject.FindFirstObjectByType<LeavePortButtonUI>();
-        //var parent3 = button?.GetParentEntity();
-        //Debug.Log($"UBOATSOP_LeavePortButton GetLeavePortButton 3 BUTTON {button3} ACTIVE {button3?.isActiveAndEnabled} PARENT {parent3} {parent3?.Name}");
-
-        //campaignObjectiveBannersUI.
-
-
-        /*
-        ReadOnlyCollection<ICampaignObjective> list = campaignObjectiveBannersUI.campaignObjectivesManager.List;
-        for (int index = list.Count - 1; index >= 0; --index)
-        {
-            ICampaignObjective campaignObjective = list[index];
-            if (!campaignObjective.HideInUI)
-            {
-                CampaignObjectiveBannerUI objectiveBannerUi = this.bannerPrefab.Duplicate(campaignObjective);
-                objectiveBannerUi.name = campaignObjective.Id;
-                objectiveBannerUi.transform.SetParent((Transform)this.bannersContainer, false);
-                objectiveBannerUi.interactable = this.isInteractable;
-                this.banners.Add(objectiveBannerUi);
-            }
-        }
-        */
-
-
-
-
-        return null;
-    }
+ 
 
     private static void UpdateLastDock(bool force = false)
     {
@@ -396,13 +261,6 @@ public class UBOATSOP_LeavePortButton : BackgroundTaskBase
         try
         {
 
-            //var button = GetLeavePortButton();
-            //button?.gameObject.SetActive(false);
-            //button?.Invoke("ValidateState",0f);
-            //if (button != null) button.enabled = false;
-            //button?.gameObject.SetActive(false);
-            
-            //Debug.Log($"UBOATSOP_LeavePortButton HideLeavePortButton Q {playerShipProxy.CurrentShip.CurrentQuickTravelTarget} T {playerShipProxy.CurrentShip.CurrentQuickTravelTargetType}");
             if (playerShipProxy != null
                     && playerShipProxy.CurrentShip != null)
             {
