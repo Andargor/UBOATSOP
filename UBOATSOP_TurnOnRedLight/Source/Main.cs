@@ -233,6 +233,29 @@ public class UBOATSOP_TurnOnRedLight : BackgroundTaskBase
             if (lightingIterationsRemaining-- > 0)
             {
                 playerCrew.Skipper.StopSpeaking();
+                //playerCrew.Skipper.SpeakAudioSource.
+                //playerCrew.Skipper.IsSpeaking
+                //playerCrew.Skipper.SpeakAudioSource
+                //ClearQueuedTickets
+                //playerShipProxy.CurrentShip.sp
+                //PlayerShip ship = playerShipProxy.CurrentShip;
+                //ship.SpeakerSystem.
+
+                //public static event Action<PlayableCharacter> GlobalActionChanged;
+
+
+                //public event Action<InteractiveCharacter, bool> SpeakStarted;
+
+                /*
+                 * public interface ISpeakController
+  {
+    event Action<StatementStartEvent> StatementStarted;
+                */
+
+                //playerCrew.Skipper.SpeakAudioSource.
+                //PlayerShip ship = playerShipProxy.CurrentShip;
+                //ship.
+
                 return;
             }
 
