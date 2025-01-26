@@ -11,11 +11,11 @@ using UBOAT.Game.Sandbox.Messages;
 
 public class UBOATSOP_TonnageSunkProgress : BackgroundTaskBase
 {
-    [Inject] private static IExecutionQueue executionQueue;
-    [Inject] private static INotificationBarUI notificationBarUI;
-    [Inject] private static PlayerCrew playerCrew;
-    [Inject] private static IPlayerShipProxy playerShipProxy;
-    [Inject] private static PlayerCareer playerCareer;
+    [Inject] private static IExecutionQueue executionQueue = null;
+    //[Inject] private static INotificationBarUI notificationBarUI;
+    //[Inject] private static PlayerCrew playerCrew;
+    [Inject] private static IPlayerShipProxy playerShipProxy = null;
+    [Inject] private static PlayerCareer playerCareer = null;
 
     public const string Version = UBOATSOP_TonnageSunkProgress_Constants.Version;
     private static bool firstUpdate = true;
@@ -46,7 +46,8 @@ public class UBOATSOP_TonnageSunkProgress : BackgroundTaskBase
             Debug.Log($"UBOATSOP_TonnageSunkProgress MESSAGE {progress}: {tonnage}");
             */
 
-            firstUpdate = false;
+            if (firstUpdate) firstUpdate = false;
+
 
         } catch (Exception ex)
         {
@@ -97,7 +98,7 @@ public class UBOATSOP_TonnageSunkProgress : BackgroundTaskBase
                 //var progress = new LocalizedString("UI/Progress");
                 //var tonnage = new LocalizedString("Messages/Destroyed", playerCareer.TonnageSunk.ToString() + " GRT");
                 var progress = new LocalizedString("UI/Progress");
-                var tonnage = new LocalizedString("UI/EntitySelectionUI/GRT", playerCareer.TonnageSunk);
+                var tonnage = new LocalizedString("UI/EntitySelectionUI/GRT", playerCareer.TotalTonnageSunkOnCurrentAssignment);
                 //AddJournalEntry($"Progress: {playerCareer.TonnageSunk} GRT sunk.");
                 AddJournalEntry($"{progress}: {tonnage}");
             }
