@@ -17,26 +17,31 @@ using UBOAT.Game.UI.Notifications;
 using DWS.Common.Pooling;
 using UBOAT.Game.Serialization;
 using System.Resources;
+using UBOAT.Game.Core.Serialization;
 
 public class UBOATSOP_LeavePortButton : BackgroundTaskBase
 {
-    [Inject] private static IExecutionQueue executionQueue;
-    [Inject] private static INotificationBarUI notificationBarUI;
-    [Inject] private static PlayerCrew playerCrew;
-    [Inject] private static IPlayerShipProxy playerShipProxy;
-    [Inject] private static PlayerCareer playerCareer;
+    [Inject] private static IExecutionQueue executionQueue = null;
+    //[Inject] private static INotificationBarUI notificationBarUI = null;
+    //[Inject] private static PlayerCrew playerCrew = null;
+    [Inject] private static IPlayerShipProxy playerShipProxy = null;
+    //[Inject] private static PlayerCareer playerCareer = null;
     //[Inject] private static SandboxSceneOrigin sandboxSceneOrigin;
     //[Inject] private static Sandbox sandbox;
-    [Inject] private static GameUI gameUI;
+    [Inject] private static GameUI gameUI = null;
     //[Inject] private static DWS.Common.Resources.ResourceManager resourceManager;
     
     public const string Version = UBOATSOP_LeavePortButton_Constants.Version;
     public static bool firstUpdate = true;
 
-    public static SandboxEntity lastDockEntity = null;
-    public static SandboxEntity lastLeavePortEntity = null;
-
     private static LeavePortButtonUI leavePortButton = null;
+    private static TraverseCanalButton traverseCanalButton = null;
+
+    [NonSerializedInGameState]
+    public static SandboxEntity lastDockEntity = null;
+
+    [NonSerializedInGameState]
+    public static SandboxEntity lastLeavePortEntity = null;
 
     public override void Start()
     {
@@ -63,6 +68,7 @@ public class UBOATSOP_LeavePortButton : BackgroundTaskBase
             }
 
             GetLeavePortButton();
+            GetTraverseCanalButton();
             ShowLeavePortButton();
             AddListeners();
 
@@ -149,10 +155,16 @@ public class UBOATSOP_LeavePortButton : BackgroundTaskBase
     private static LeavePortButtonUI GetLeavePortButton()
     {
         if (leavePortButton == null && gameUI != null && gameUI.gameObject != null) leavePortButton = gameUI?.gameObject?.GetComponentInChildren<LeavePortButtonUI>();
+
         return leavePortButton;
     }
 
- 
+    private static TraverseCanalButton GetTraverseCanalButton()
+    {
+        if (traverseCanalButton == null && gameUI != null && gameUI.gameObject != null) traverseCanalButton = gameUI?.gameObject?.GetComponentInChildren<TraverseCanalButton>();
+        
+        return traverseCanalButton;
+    }
 
     private static void UpdateLastDock(bool force = false)
     {
@@ -216,10 +228,13 @@ public class UBOATSOP_LeavePortButton : BackgroundTaskBase
     {
         try
         {
+
             if (playerShipProxy != null && playerShipProxy.CurrentShip != null)
             {
+                bool leavePortButtonActive = (leavePortButton != null && leavePortButton.isActiveAndEnabled);
+                bool traverseCanalActive = (traverseCanalButton != null && traverseCanalButton.isActiveAndEnabled);
 
-                if (playerShipProxy.CurrentShip.Alarmed)
+                if (playerShipProxy.CurrentShip.Alarmed || traverseCanalActive)
                 {
                     HideLeavePortButton();
                     return;
@@ -235,9 +250,10 @@ public class UBOATSOP_LeavePortButton : BackgroundTaskBase
                     //Debug.Log($"UBOATSOP_LeavePortButton ShowLeavePortButton shipEntity {shipEntity?.Name} portEntity {portEntity?.Name} dist {dist}");
                     if (dist < 25.0f)
                     {
-                        if (playerShipProxy.CurrentShip.CurrentQuickTravelTarget != lastLeavePortEntity)
+                        //if (playerShipProxy.CurrentShip.CurrentQuickTravelTarget != lastLeavePortEntity)
+                        if (!leavePortButtonActive)
                         {
-                            Debug.Log($"UBOATSOP_LeavePortButton ShowLeavePortButton LEAVEPORT CURRENT {playerShipProxy.CurrentShip.CurrentQuickTravelTarget?.Name} TARGET {lastLeavePortEntity?.Name}");
+                            //Debug.Log($"UBOATSOP_LeavePortButton ShowLeavePortButton LEAVEPORT CURRENT {playerShipProxy.CurrentShip.CurrentQuickTravelTarget?.Name} TARGET {lastLeavePortEntity?.Name}");
 
                             playerShipProxy.CurrentShip.SetQuickTravelTarget(lastLeavePortEntity, QuickTravelTargetType.LeavePortArea);
 
@@ -245,6 +261,7 @@ public class UBOATSOP_LeavePortButton : BackgroundTaskBase
                     } else
                     {
                         HideLeavePortButton();
+                        UpdateLastDock();
                     }
 
                 }
