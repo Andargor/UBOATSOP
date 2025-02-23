@@ -13,25 +13,31 @@ using System.Collections.Generic;
 using UBOAT.Game.Scene.Characters.Activators;
 using UBOAT.Game.Scene.Environment;
 using UBOAT.Game.Scene.Effects;
+using Debug = UnityEngine.Debug;
+using UBOAT.Game.Scene.Characters.Statuses;
+using UBOAT.Game.Core.Time;
+
+
 
 
 public class UBOATSOP_TurnOnRedLight : BackgroundTaskBase
 {
-    [Inject] private static IExecutionQueue executionQueue;
-    [Inject] private static INotificationBarUI notificationBarUI;
-    [Inject] private static PlayerCrew playerCrew;
-    [Inject] private static IPlayerShipProxy playerShipProxy;
-    [Inject] private static PlayerCareer playerCareer;
-    [Inject] private static Weather weather;
-    //[Inject] private static PlayerShipInteriorLighting lighting;
+    [Inject] private static IExecutionQueue executionQueue = null;
+    [Inject] private static PlayerCrew playerCrew = null;
+    [Inject] private static IPlayerShipProxy playerShipProxy = null;
+    [Inject] private static PlayerCareer playerCareer = null;
+    [Inject] private static Weather weather = null;
+    [Inject] private static GameTime gameTime;
+
 
     public const string Version = UBOATSOP_TurnOnRedLight_Constants.Version;
     private static bool firstUpdate = true;
 
     private static PlayerShipInteriorLighting playerShipInteriorLighting = null;
     
-    private const int NUM_UPDATE_ITERATIONS = 6;
+    private const int NUM_UPDATE_ITERATIONS = 60;
     private static int lightingIterationsRemaining = 0;
+
     public override void Start()
     {
         try
@@ -49,6 +55,7 @@ public class UBOATSOP_TurnOnRedLight : BackgroundTaskBase
     {
         try
         {
+
             if (weather.IsNight) TurnOnRedLight();
             else TurnOnWhiteLight();
 
@@ -89,9 +96,13 @@ public class UBOATSOP_TurnOnRedLight : BackgroundTaskBase
 
                 weather.DarkWeatherEnded -= WeatherOnDarkWeatherEnded;
                 weather.DarkWeatherEnded += WeatherOnDarkWeatherEnded;
+
+                if (playerCrew && playerCrew.Skipper)
+                {
+                    playerCrew.Skipper.SpeakStarted -= SkipperSpeakStarted;
+                    playerCrew.Skipper.SpeakStarted += SkipperSpeakStarted;
+                }
             }
-
-
 
         } catch (Exception ex)
         {
@@ -112,22 +123,14 @@ public class UBOATSOP_TurnOnRedLight : BackgroundTaskBase
         TurnOnWhiteLight();
     }
 
-    private static void SimpleRedLight()
+    private static void SkipperSpeakStarted(InteractiveCharacter character, bool show)
     {
-
-        try
+        //Debug.Log($"UBOATSOP_TurnOnRedLight == EVENT SkipperSpeakStarted timescale={gameTime.ArtificialTimeScale}");
+        if (character && gameTime && gameTime.ArtificialTimeScale > 20.0)
         {
-            LightSwitch equipment = playerShipProxy.CurrentShip.GetEquipment<LightSwitch>();
-            if ((bool)(UnityEngine.Object)equipment)
-            {
-                equipment.SetColor(UBOAT.Game.Scene.Effects.LightController.Preset.Alarm);
-            }
-        } catch (Exception ex)
-        {
-            Debug.LogException(ex);
+            //Debug.Log($"UBOATSOP_TurnOnRedLight == EVENT SkipperSpeakStarted SUPPRESSED");
+            character.StopSpeaking();
         }
-
-
     }
 
     private static PlayerShipInteriorLighting GetShipInteriorLighting()
@@ -160,9 +163,10 @@ public class UBOATSOP_TurnOnRedLight : BackgroundTaskBase
         try
         {
 
+            //Debug.Log($"UBOATSOP_TurnOnRedLight TurnOnRedLight count={lightingIterationsRemaining}");
+
             if (lightingIterationsRemaining-- > 0)
             {
-                playerCrew.Skipper.StopSpeaking();
                 return;
             }
 
@@ -212,7 +216,6 @@ public class UBOATSOP_TurnOnRedLight : BackgroundTaskBase
                                     Debug.LogException(ex);
                                 }
                                 playerCrew.GlobalActionQueue.Add(actionsList[index1].Action.Duplicate(component));
-                                playerCrew.Skipper.StopSpeaking();
                                 lightingIterationsRemaining = NUM_UPDATE_ITERATIONS;
                             }
                         }
@@ -229,33 +232,10 @@ public class UBOATSOP_TurnOnRedLight : BackgroundTaskBase
     {
         try
         {
+            //Debug.Log($"UBOATSOP_TurnOnRedLight TurnOnWhiteLight count={lightingIterationsRemaining}");
 
             if (lightingIterationsRemaining-- > 0)
             {
-                playerCrew.Skipper.StopSpeaking();
-                //playerCrew.Skipper.SpeakAudioSource.
-                //playerCrew.Skipper.IsSpeaking
-                //playerCrew.Skipper.SpeakAudioSource
-                //ClearQueuedTickets
-                //playerShipProxy.CurrentShip.sp
-                //PlayerShip ship = playerShipProxy.CurrentShip;
-                //ship.SpeakerSystem.
-
-                //public static event Action<PlayableCharacter> GlobalActionChanged;
-
-
-                //public event Action<InteractiveCharacter, bool> SpeakStarted;
-
-                /*
-                 * public interface ISpeakController
-  {
-    event Action<StatementStartEvent> StatementStarted;
-                */
-
-                //playerCrew.Skipper.SpeakAudioSource.
-                //PlayerShip ship = playerShipProxy.CurrentShip;
-                //ship.
-
                 return;
             }
 
@@ -295,7 +275,7 @@ public class UBOATSOP_TurnOnRedLight : BackgroundTaskBase
                                     {
                                         if (actions[index2] is SwitchLightAction switchLightAction)
                                         {
-                                            if (switchLightAction.Preset != LightController.Preset.Surface) actionBuffer.Add(switchLightAction);
+                                            if (switchLightAction.Preset != LightController.Preset.Surface) actionBuffer.Add(switchLightAction);                                            
                                         }
                                     }
                                     for (int index3 = actionBuffer.Count - 1; index3 >= 0; --index3)
@@ -305,7 +285,6 @@ public class UBOATSOP_TurnOnRedLight : BackgroundTaskBase
                                     Debug.LogException(ex);
                                 }
                                 playerCrew.GlobalActionQueue.Add(actionsList[index1].Action.Duplicate(component));
-                                playerCrew.Skipper.StopSpeaking();
                                 lightingIterationsRemaining = NUM_UPDATE_ITERATIONS;
                             }
                         }
