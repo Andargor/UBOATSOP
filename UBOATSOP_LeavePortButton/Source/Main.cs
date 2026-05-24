@@ -1,23 +1,13 @@
 ﻿using DWS.Common.InjectionFramework;
+using DWS.Common.Pooling;
 using DWS.Common.Resources;
 using UBOAT.Game;
 using UBOAT.Game.Core;
-using UBOAT.Game.UI;
-using UBOAT.Game.Sandbox;
-using UBOAT.Game.Scene.Characters;
-using UnityEngine;
-using System;
-using UBOAT.Game.Scene.Entities;
-using UBOAT.Game.Scene;
-using DWS.Common;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using UBOAT.Game.Sandbox.CampaignObjectives;
-using UBOAT.Game.UI.Notifications;
-using DWS.Common.Pooling;
-using UBOAT.Game.Serialization;
-using System.Resources;
 using UBOAT.Game.Core.Serialization;
+using UBOAT.Game.Sandbox;
+using UBOAT.Game.Scene.Entities;
+using UBOAT.Game.UI;
+using UnityEngine;
 
 public class UBOATSOP_LeavePortButton : BackgroundTaskBase
 {
@@ -50,7 +40,7 @@ public class UBOATSOP_LeavePortButton : BackgroundTaskBase
             Debug.Log($"{this} Version {Version}");
             firstUpdate = true;
             executionQueue.AddTimedUpdateListener(DoUpdate, 5.0f);
-        } catch (Exception ex)
+        } catch (System.Exception ex)
         {
             Debug.LogException(ex);
         }
@@ -74,7 +64,7 @@ public class UBOATSOP_LeavePortButton : BackgroundTaskBase
 
             firstUpdate = false;
 
-        } catch (Exception ex)
+        } catch (System.Exception ex)
         {
             Debug.LogException(ex);
         }
@@ -88,7 +78,7 @@ public class UBOATSOP_LeavePortButton : BackgroundTaskBase
         try
         {
             executionQueue.RemoveTimedUpdateListener(DoUpdate);
-        } catch (Exception ex)
+        } catch (System.Exception ex)
         {
             Debug.LogException(ex);
         }
@@ -106,7 +96,7 @@ public class UBOATSOP_LeavePortButton : BackgroundTaskBase
             playerShipProxy.CurrentShip.AlarmStarted += ShipOnAlarmStarted;
 
 
-        } catch (Exception ex)
+        } catch (System.Exception ex)
         {
             Debug.LogException(ex);
         }
@@ -121,7 +111,7 @@ public class UBOATSOP_LeavePortButton : BackgroundTaskBase
 
             UpdateLastDock();
 
-        } catch (Exception ex)
+        } catch (System.Exception ex)
         {
             Debug.LogException(ex);
         }
@@ -135,7 +125,7 @@ public class UBOATSOP_LeavePortButton : BackgroundTaskBase
 
             HideLeavePortButton();
 
-        } catch (Exception ex)
+        } catch (System.Exception ex)
         {
             Debug.LogException(ex);
         }
@@ -216,7 +206,7 @@ public class UBOATSOP_LeavePortButton : BackgroundTaskBase
                 }
             }
 
-        } catch (Exception ex)
+        } catch (System.Exception ex)
         {
             Debug.LogException(ex);
         }
@@ -267,7 +257,7 @@ public class UBOATSOP_LeavePortButton : BackgroundTaskBase
                 }
             }
 
-        } catch (Exception ex)
+        } catch (System.Exception ex)
         {
             Debug.LogException(ex);
         }
@@ -290,7 +280,7 @@ public class UBOATSOP_LeavePortButton : BackgroundTaskBase
                 leavePortButton?.gameObject?.SetActive(false);
             }
 
-        } catch (Exception ex)
+        } catch (System.Exception ex)
         {
             Debug.LogException(ex);
         }

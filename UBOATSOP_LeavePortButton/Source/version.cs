@@ -1,1 +1,1 @@
-static class UBOATSOP_LeavePortButton_Constants { public const string Version = "2025.1.14.74"; }
+static class UBOATSOP_LeavePortButton_Constants { public const string Version = "2026.1.20.2"; }

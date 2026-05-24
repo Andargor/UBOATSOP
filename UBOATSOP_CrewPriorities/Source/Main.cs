@@ -5,11 +5,9 @@ using UBOAT.Game.UI;
 using UBOAT.Game.Sandbox;
 using UBOAT.Game.Scene.Characters;
 using UnityEngine;
-using System;
 using UBOAT.Game.Scene.Entities;
 using UBOAT.Game.Scene.Characters.Actions;
 using System.Collections.Generic;
-using TMPro;
 
 public class UBOATSOP_CrewPriorities : BackgroundTaskBase
 {
@@ -44,7 +42,7 @@ public class UBOATSOP_CrewPriorities : BackgroundTaskBase
             Debug.Log($"{this} Version {Version}");
             firstUpdate = true;
             executionQueue.AddTimedUpdateListener(DoUpdate, 5.0f);
-        } catch (Exception ex)
+        } catch (System.Exception ex)
         {
             Debug.LogException(ex);
         }
@@ -58,7 +56,7 @@ public class UBOATSOP_CrewPriorities : BackgroundTaskBase
 
             firstUpdate = false;
 
-        } catch (Exception ex)
+        } catch (System.Exception ex)
         {
             Debug.LogException(ex);
         }
@@ -72,7 +70,7 @@ public class UBOATSOP_CrewPriorities : BackgroundTaskBase
         try
         {
             executionQueue.RemoveTimedUpdateListener(DoUpdate);
-        } catch (Exception ex)
+        } catch (System.Exception ex)
         {
             Debug.LogException(ex);
         }
@@ -203,7 +201,7 @@ public class UBOATSOP_CrewPriorities : BackgroundTaskBase
 
             //Debug.Log("UBOATSOP_CrewPriorities ManageCrewPriorites END");
 
-        } catch (Exception ex)
+        } catch (System.Exception ex)
         {
             Debug.LogException(ex);
         }
