@@ -1,27 +1,18 @@
-﻿using HarmonyLib;
-using DWS.Common.InjectionFramework;
+﻿using DWS.Common.InjectionFramework;
 using UBOAT.Game;
 using UBOAT.Game.Core;
-using UBOAT.Game.UI;
-using UBOAT.Game.Sandbox;
-using UBOAT.Game.Scene.Characters;
-using UnityEngine;
-using System;
-using UBOAT.Game.Scene.Entities;
-using UBOAT.Game.Core.Data;
-using UBOAT.Game.Scene.Items;
 using UBOAT.Game.Core.Serialization;
+using UBOAT.Game.Scene.Characters;
 using UBOAT.Game.Scene.Characters.Actions;
+using UBOAT.Game.Scene.Entities;
+using UBOAT.Game.Scene.Items;
+using UnityEngine;
 
-
-public class UBOATSOP_TurnOnPump : BackgroundTaskBase, IUserMod
+public class UBOATSOP_TurnOnPump : BackgroundTaskBase
 {
     [Inject] private static IExecutionQueue executionQueue;
-    [Inject] private static INotificationBarUI notificationBarUI;
     [Inject] private static PlayerCrew playerCrew;
     [Inject] private static IPlayerShipProxy playerShipProxy;
-    [Inject] private static PlayerCareer playerCareer;
-    [Inject] private static UserSettings userSettings;
 
     public const string Version = UBOATSOP_TurnOnPump_Constants.Version;
     public const float INTERVAL_UPDATE_SECONDS = 60.0f;  // run once per minute
@@ -31,14 +22,6 @@ public class UBOATSOP_TurnOnPump : BackgroundTaskBase, IUserMod
     private static float secondsElapsedSinceLastCheck = 0f;
     private static bool firstUpdate = true;
 
-    [NonSerializedInGameState]
-    public void OnLoaded()
-    {
-        var harmony = new Harmony("com.andargor.UBOATSOP_TurnOnPump");
-        harmony.PatchAll();
-        Debug.Log($"{this} Version {Version} Harmony Loaded");
-    }
-
     public override void Start()
     {
         try
@@ -46,7 +29,7 @@ public class UBOATSOP_TurnOnPump : BackgroundTaskBase, IUserMod
             Debug.Log($"{this} Version {Version}");
             firstUpdate = true;
             executionQueue.AddTimedUpdateListener(DoUpdate, INTERVAL_UPDATE_SECONDS);
-        } catch (Exception ex)
+        } catch (System.Exception ex)
         {
             Debug.LogException(ex);
         }
@@ -59,7 +42,7 @@ public class UBOATSOP_TurnOnPump : BackgroundTaskBase, IUserMod
             TurnOnPump();
             firstUpdate = false;
 
-        } catch (Exception ex)
+        } catch (System.Exception ex)
         {
             Debug.LogException(ex);
         }
@@ -73,35 +56,21 @@ public class UBOATSOP_TurnOnPump : BackgroundTaskBase, IUserMod
         try
         {
             executionQueue.RemoveTimedUpdateListener(DoUpdate);
-        } catch (Exception ex)
+        } catch (System.Exception ex)
         {
             Debug.LogException(ex);
         }
 
     }
 
-    private static double TrimPumpWaterAmount(TrimPump pump)
+    private static double TotalShipWaterAmount()
     {
         double result = 0.0;
 
-        try
-        {
-            if (pump)
-            {
-                TrimPump.ConnectedTank[] tanks = (TrimPump.ConnectedTank[])Traverse.Create(pump)?.Field("tanks")?.GetValue();
+        if (playerShipProxy != null && playerShipProxy.CurrentShip != null) {
 
-                if (tanks != null)
-                {
-                    for (int i = 0; i < tanks.Length; i++)
-                    {
-                        result += tanks[i].Tank.Water;
-                    }
-                }
-                //Debug.Log($"UBOATSOP_TurnOnPump TrimPumpWaterAmount PUMP {pump} TANKS {tanks} AMOUNT {result}");
-            }
-        } catch (Exception ex)
-        {
-            Debug.LogException(ex);
+        foreach (Compartment compartment in playerShipProxy.CurrentShip.Interior.Compartments)
+                result += compartment.Water;
         }
 
         return result;
@@ -118,7 +87,7 @@ public class UBOATSOP_TurnOnPump : BackgroundTaskBase, IUserMod
             TrimPump equipment = playerShipProxy.CurrentShip.GetEquipment<TrimPump>("Trim Pump");
             if ((bool)(UnityEngine.Object)equipment)
             {
-                double waterLevel = TrimPumpWaterAmount(equipment);
+                double waterLevel = TotalShipWaterAmount();
                 //Debug.Log($"UBOATSOP_TurnOnPump WATER LEVEL {waterLevel}");
                 
                 if (waterLevel >= MAXIMUM_WATER_LEVEL)
@@ -130,11 +99,11 @@ public class UBOATSOP_TurnOnPump : BackgroundTaskBase, IUserMod
                         if (secondsElapsedSinceLastCheck > INTERVAL_CHECK_SECONDS)
                         {
                             UBOAT.Game.Scene.Characters.Activators.Activator component = equipment.GetComponent<UBOAT.Game.Scene.Characters.Activators.Activator>();
-                            UBOAT.Game.Scene.Characters.Skills.CharacterActionInfo action = component.GetAction<SwitchPowerAction>((PlayableCharacter)null, true);
-                            if (action.Action != null && action.State == ActionState.Enabled)
+                            UBOAT.Game.Scene.Characters.Skills.CharacterActionInfo actionInfo = component.GetActionInfo<SwitchPowerAction>((PlayableCharacter)null, true);
+                            if (actionInfo.ActionTemplate != null && actionInfo.State == ActionState.Enabled)
                             {
                                 Debug.Log($"UBOATSOP_TurnOnPump ENABLE WATER LEVEL {waterLevel}");
-                                playerCrew.GlobalActionQueue.Add(action.Action.Duplicate(component));
+                                playerCrew.GlobalActionQueue.Add(actionInfo.ActionTemplate.Duplicate(component));
                                 secondsElapsedSinceLastCheck = 0f;
                             }
                         }
@@ -144,9 +113,9 @@ public class UBOATSOP_TurnOnPump : BackgroundTaskBase, IUserMod
                     if (equipment.enabled && !equipment.IsWaterLeft)
                     {
                         UBOAT.Game.Scene.Characters.Activators.Activator component = equipment.GetComponent<UBOAT.Game.Scene.Characters.Activators.Activator>();
-                        UBOAT.Game.Scene.Characters.Skills.CharacterActionInfo action = component.GetAction<SwitchPowerAction>((PlayableCharacter)null, true);
-                        if (action.Action != null && action.State == ActionState.Disabled)
-                            playerCrew.GlobalActionQueue.Add(action.Action.Duplicate(component));
+                        UBOAT.Game.Scene.Characters.Skills.CharacterActionInfo actionInfo = component.GetActionInfo<SwitchPowerAction>((PlayableCharacter)null, true);
+                        if (actionInfo.ActionTemplate != null && actionInfo.State == ActionState.Disabled)
+                            playerCrew.GlobalActionQueue.Add(actionInfo.ActionTemplate.Duplicate(component));
                     }
                 }
                 
