@@ -16,6 +16,7 @@ public class UBOATSOP_CrewPriorities : BackgroundTaskBase
     [Inject] private static PlayerCrew playerCrew;
     [Inject] private static IPlayerShipProxy playerShipProxy;
     [Inject] private static PlayerCareer playerCareer;
+    [Inject] private static ICharacterRolesDatabase characterRolesDatabase;
 
     public const string Version = UBOATSOP_CrewPriorities_Constants.Version;
     private static bool firstUpdate = true;
@@ -113,6 +114,9 @@ public class UBOATSOP_CrewPriorities : BackgroundTaskBase
                 if (character != null && character.IsOfficer)
                 {
                     //Debug.Log($"UBOATSOP_CrewPriorities ManageCrewPriorites CREW {character.Name} ACTION {character.Action} SOURCE {character.Action?.SourceJob} JOB {character.Action?.SourceJob?.Name}");
+
+                    //var sleepAction = character.Action is slee;
+
                     if (character.Action != null && character.Action?.SourceJob?.Name != "Officer SleepAction" && character.Action?.SourceJob?.Name != "Skipper SleepAction")
                     {
                         //Debug.Log($"UBOATSOP_CrewPriorities ManageCrewPriorites >CREW2 {character.Name} ACTION {character.Action} SOURCE {character.Action?.SourceJob} JOB {character.Action?.SourceJob?.Name}");
@@ -123,10 +127,13 @@ public class UBOATSOP_CrewPriorities : BackgroundTaskBase
                         ICharacterRoleJob sourceJob = character.Action.SourceJob;
                         if (character.Action.SourceJob == null)
                         {
-                            ActionProfitabilityData bestAction = ((CharacterRole)character.Role).GetBestAction(character.ActionQueue.Characters, !flag);
-                            //Debug.Log($"UBOATSOP_CrewPriorities ManageCrewPriorites >>PROFIT {bestAction.Action} {bestAction.Activator} SOURCE {bestAction.SourceJob?.Name} PROFIT {bestAction.Profit} BASEPRIO {bestAction.SourceJob?.BasePriority} ");
+                            if (character.Role != null)
+                            {
+                                ActionProfitabilityData bestAction = ((CharacterRole)character.Role).GetBestAction(character.ActionQueue.Characters, !flag);
+                                //Debug.Log($"UBOATSOP_CrewPriorities ManageCrewPriorites >>PROFIT {bestAction.Action} {bestAction.Activator} SOURCE {bestAction.SourceJob?.Name} PROFIT {bestAction.Profit} BASEPRIO {bestAction.SourceJob?.BasePriority} ");
 
-                            sourceJob = bestAction.SourceJob;
+                                sourceJob = bestAction.SourceJob;
+                            }
                         }
 
                         //Debug.Log($"UBOATSOP_CrewPriorities ManageCrewPriorites >SOURCEJOB {sourceJob?.Name} PRIO {sourceJob?.BasePriority}");
@@ -140,14 +147,13 @@ public class UBOATSOP_CrewPriorities : BackgroundTaskBase
                             }
                         } else
                         {
-                            Debug.Log($"UBOATSOP_CrewPriorities ManageCrewPriorites *** ERROR {character.Name} NULL JOB");
+                            //Debug.Log($"UBOATSOP_CrewPriorities ManageCrewPriorites *** ERROR {character.Name} NULL JOB");
                         }
                     }
                 }
             }
 
             //dumpJobs(jobs);
-
             for (int i = 0; i < characters.Length; i++)
             {
                 var character = characters[i];
@@ -191,7 +197,7 @@ public class UBOATSOP_CrewPriorities : BackgroundTaskBase
                                         }
                                     } else
                                     {
-                                        //Debug.Log($"UBOATSOP_CrewPriorities ManageCrewPriorites -->2 *** OVERRIDE ABORT {character.Name} {role?.Name} PRIO {role?.BasePriority} <=> {otherchar.Name} PRIO {jobinfo.priority}");
+                                        Debug.Log($"UBOATSOP_CrewPriorities ManageCrewPriorites -->2 *** OVERRIDE ABORT {character.Name} {role?.Name} PRIO {role?.BasePriority} <=> {otherchar.Name} PRIO {jobinfo.priority}");
                                     }
                                 }
                             }
