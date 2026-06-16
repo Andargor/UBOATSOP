@@ -94,8 +94,10 @@ public class UBOATSOP_TonnageSunkProgress : BackgroundTaskBase
         {
             if (playerCareer != null)
             {
+                //var progress = new LocalizedString("UI/Progress");
+                //var tonnage = new LocalizedString("Messages/Destroyed", playerCareer.TonnageSunk.ToString() + " GRT");
                 var progress = new LocalizedString("UI/Progress");
-                var tonnage = new LocalizedString("Messages/Destroyed", playerCareer.TonnageSunk.ToString() + " GRT");
+                var tonnage = new LocalizedString("UI/EntitySelectionUI/GRT", playerCareer.TonnageSunk);
                 //AddJournalEntry($"Progress: {playerCareer.TonnageSunk} GRT sunk.");
                 AddJournalEntry($"{progress}: {tonnage}");
             }
