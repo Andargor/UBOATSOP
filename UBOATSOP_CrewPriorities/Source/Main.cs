@@ -8,6 +8,7 @@ using UnityEngine;
 using UBOAT.Game.Scene.Entities;
 using UBOAT.Game.Scene.Characters.Actions;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 public class UBOATSOP_CrewPriorities : BackgroundTaskBase
 {
@@ -20,6 +21,7 @@ public class UBOATSOP_CrewPriorities : BackgroundTaskBase
 
     public const string Version = UBOATSOP_CrewPriorities_Constants.Version;
     private static bool firstUpdate = true;
+    private static string moduleName = "";
 
     public struct JobInfo
     {
@@ -40,28 +42,21 @@ public class UBOATSOP_CrewPriorities : BackgroundTaskBase
     {
         try
         {
-            Debug.Log($"{this} Version {Version}");
+            moduleName = $"{this}";
+            Debug.Log($"{moduleName} Version {Version}");
             firstUpdate = true;
             executionQueue.AddTimedUpdateListener(DoUpdate, 5.0f);
         } catch (System.Exception ex)
         {
+            Debug.Log($"{moduleName} Exception in Start()");
             Debug.LogException(ex);
         }
     }
 
     private static float DoUpdate()
     {
-        try
-        {
-            ManageCrewPriorites();
-
-            firstUpdate = false;
-
-        } catch (System.Exception ex)
-        {
-            Debug.LogException(ex);
-        }
-
+        ManageCrewPriorites();
+        firstUpdate = false;
         return 5.0f;
     }
 
@@ -73,6 +68,7 @@ public class UBOATSOP_CrewPriorities : BackgroundTaskBase
             executionQueue.RemoveTimedUpdateListener(DoUpdate);
         } catch (System.Exception ex)
         {
+            Debug.Log($"{moduleName} Exception in OnFinished()");
             Debug.LogException(ex);
         }
 
@@ -88,10 +84,12 @@ public class UBOATSOP_CrewPriorities : BackgroundTaskBase
 
     private static bool HasPlayerOrders(ActionQueue actionQueue)
     {
+        if (actionQueue == null) return false;
+
         List<CharacterAction> actions = actionQueue.Actions;
         for (int index = actions.Count - 1; index >= 0; --index)
         {
-            if (actions[index].IsForcedAction)
+            if (actions[index] != null && actions[index].IsForcedAction)
                 return true;
         }
         return false;
@@ -100,14 +98,18 @@ public class UBOATSOP_CrewPriorities : BackgroundTaskBase
     private static void ManageCrewPriorites()
     {
 
+        if (playerShipProxy != null && playerShipProxy.CurrentShip != null && playerShipProxy.CurrentShip.Alarmed) return;
+
+        if (playerCrew == null) return;
+
+        var characters = playerCrew.Characters;
+        var jobs = new Dictionary<string, JobInfo>();
+
         try
         {
             //Debug.Log("UBOATSOP_CrewPriorities ManageCrewPriorites START");
 
-            if (playerShipProxy != null && playerShipProxy.CurrentShip != null && playerShipProxy.CurrentShip.Alarmed) return;
 
-            var characters = playerCrew.Characters;
-            var jobs = new Dictionary<string, JobInfo>();
             for (int i = 0; i < characters.Length; i++)
             {
                 var character = characters[i];
@@ -115,9 +117,8 @@ public class UBOATSOP_CrewPriorities : BackgroundTaskBase
                 {
                     //Debug.Log($"UBOATSOP_CrewPriorities ManageCrewPriorites CREW {character.Name} ACTION {character.Action} SOURCE {character.Action?.SourceJob} JOB {character.Action?.SourceJob?.Name}");
 
-                    //var sleepAction = character.Action is slee;
-
-                    if (character.Action != null && character.Action?.SourceJob?.Name != "Officer SleepAction" && character.Action?.SourceJob?.Name != "Skipper SleepAction")
+                    //if (character.Action != null && character.Action?.SourceJob?.Name != "Officer SleepAction" && character.Action?.SourceJob?.Name != "Skipper SleepAction")
+                    if (character.Action != null && character.Action.SourceJob?.Name != "Officer SleepAction" && character.Action.SourceJob?.Name != "Skipper SleepAction")
                     {
                         //Debug.Log($"UBOATSOP_CrewPriorities ManageCrewPriorites >CREW2 {character.Name} ACTION {character.Action} SOURCE {character.Action?.SourceJob} JOB {character.Action?.SourceJob?.Name}");
 
@@ -127,7 +128,7 @@ public class UBOATSOP_CrewPriorities : BackgroundTaskBase
                         ICharacterRoleJob sourceJob = character.Action.SourceJob;
                         if (character.Action.SourceJob == null)
                         {
-                            if (character.Role != null)
+                            if (character.Role != null && character.ActionQueue != null && character.ActionQueue.Characters != null)
                             {
                                 ActionProfitabilityData bestAction = ((CharacterRole)character.Role).GetBestAction(character.ActionQueue.Characters, !flag);
                                 //Debug.Log($"UBOATSOP_CrewPriorities ManageCrewPriorites >>PROFIT {bestAction.Action} {bestAction.Activator} SOURCE {bestAction.SourceJob?.Name} PROFIT {bestAction.Profit} BASEPRIO {bestAction.SourceJob?.BasePriority} ");
@@ -153,6 +154,15 @@ public class UBOATSOP_CrewPriorities : BackgroundTaskBase
                 }
             }
 
+        } catch (System.Exception ex)
+        {
+            Debug.Log($"{moduleName} Exception in ManageCrewPriorites() Stage 1");
+            Debug.LogException(ex);
+        }
+
+
+        try
+        {
             //dumpJobs(jobs);
             for (int i = 0; i < characters.Length; i++)
             {
@@ -197,7 +207,7 @@ public class UBOATSOP_CrewPriorities : BackgroundTaskBase
                                         }
                                     } else
                                     {
-                                        Debug.Log($"UBOATSOP_CrewPriorities ManageCrewPriorites -->2 *** OVERRIDE ABORT {character.Name} {role?.Name} PRIO {role?.BasePriority} <=> {otherchar.Name} PRIO {jobinfo.priority}");
+                                        //Debug.Log($"UBOATSOP_CrewPriorities ManageCrewPriorites -->2 *** OVERRIDE ABORT {character.Name} {role?.Name} PRIO {role?.BasePriority} <=> {otherchar.Name} PRIO {jobinfo.priority}");
                                     }
                                 }
                             }
@@ -209,6 +219,7 @@ public class UBOATSOP_CrewPriorities : BackgroundTaskBase
 
         } catch (System.Exception ex)
         {
+            Debug.Log($"{moduleName} Exception in ManageCrewPriorites() Stage 2");
             Debug.LogException(ex);
         }
 
