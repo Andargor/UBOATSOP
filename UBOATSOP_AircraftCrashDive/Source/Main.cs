@@ -88,7 +88,15 @@ public class UBOATSOP_AircraftCrashDive : BackgroundTaskBase
         try
         {
             var entity = e.Observation?.Entity;
-            if (entity != null && entity is Aircraft && playerShipProxy != null && playerShipProxy.CurrentShip != null)
+
+            //Debug.Log($"UBOATSOP_AircraftCrashDive ShipOnObservationAdded NAME {entity?.Name} COUNTRY {entity?.Country} RELATION {entity?.Country?.GetRelationWith(playerShipProxy?.Country)}");
+
+            if (entity != null 
+                    && entity is Aircraft
+                    && playerShipProxy != null
+                    && playerShipProxy.CurrentShip != null
+                    && entity.Country.GetRelationWith(playerShipProxy.Country) == Country.Relation.Enemy
+                    )
             {
                 //bool isAircraft = (e.Observation?.Entity is Aircraft);
                 Debug.Log($"== EVENT ShipOnObservationAdded OBS {e.Observator?.Name} ENT {e.Observation?.Entity?.Name} PREV {e.PreviousLostObservation?.PerceivedName} AIRCRAFT");
