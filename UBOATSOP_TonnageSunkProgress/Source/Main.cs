@@ -5,7 +5,6 @@ using UBOAT.Game.UI;
 using UBOAT.Game.Sandbox;
 using UBOAT.Game.Scene.Characters;
 using UnityEngine;
-using System;
 using UBOAT.Game.Scene.Entities;
 using UBOAT.Game.Sandbox.Messages;
 
@@ -27,7 +26,7 @@ public class UBOATSOP_TonnageSunkProgress : BackgroundTaskBase
             Debug.Log($"{this} Version {Version}");
             firstUpdate = true;
             executionQueue.AddTimedUpdateListener(DoUpdate, 5.0f);
-        } catch (Exception ex)
+        } catch (System.Exception ex)
         {
             Debug.LogException(ex);
         }
@@ -49,7 +48,7 @@ public class UBOATSOP_TonnageSunkProgress : BackgroundTaskBase
             if (firstUpdate) firstUpdate = false;
 
 
-        } catch (Exception ex)
+        } catch (System.Exception ex)
         {
             Debug.LogException(ex);
         }
@@ -63,7 +62,7 @@ public class UBOATSOP_TonnageSunkProgress : BackgroundTaskBase
         try
         {
             executionQueue.RemoveTimedUpdateListener(DoUpdate);
-        } catch (Exception ex)
+        } catch (System.Exception ex)
         {
             Debug.LogException(ex);
         }
@@ -82,7 +81,7 @@ public class UBOATSOP_TonnageSunkProgress : BackgroundTaskBase
             }
 
 
-        } catch (Exception ex)
+        } catch (System.Exception ex)
         {
             Debug.LogException(ex);
         }
@@ -103,7 +102,7 @@ public class UBOATSOP_TonnageSunkProgress : BackgroundTaskBase
                 AddJournalEntry($"{progress}: {tonnage}");
             }
 
-        } catch (Exception ex)
+        } catch (System.Exception ex)
         {
             Debug.LogException(ex);
         }
@@ -118,7 +117,7 @@ public class UBOATSOP_TonnageSunkProgress : BackgroundTaskBase
                 playerShipProxy.CurrentShip.SandboxEntity.Journal.AddMessage((IMessage)new BasicMessage(text, playerCareer.CurrentAssignment?.SubjectTitle ?? new LocalizedString("Misc Communications"), playerShipProxy.CurrentShip.SandboxEntity));
             }
 
-        } catch (Exception ex)
+        } catch (System.Exception ex)
         {
             Debug.LogException(ex);
         }
