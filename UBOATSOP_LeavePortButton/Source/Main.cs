@@ -212,7 +212,7 @@ public class UBOATSOP_LeavePortButton : BackgroundTaskBase
 
     private static LeavePortButtonUI GetLeavePortButton()
     {
-        if (leavePortButton == null) leavePortButton = gameUI?.gameObject?.GetComponentInChildren<LeavePortButtonUI>();
+        if (leavePortButton == null && gameUI != null && gameUI.gameObject != null) leavePortButton = gameUI?.gameObject?.GetComponentInChildren<LeavePortButtonUI>();
         return leavePortButton;
     }
 
