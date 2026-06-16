@@ -7,6 +7,8 @@ using UBOAT.Game.Scene.Characters;
 using UnityEngine;
 using System;
 using UBOAT.Game.Scene.Entities;
+using System.Reflection;
+using UBOAT.Game.Core.Serialization;
 
 
 public class UBOATSOP_AircraftCrashDive : BackgroundTaskBase
@@ -19,6 +21,8 @@ public class UBOATSOP_AircraftCrashDive : BackgroundTaskBase
 
     public const string Version = UBOATSOP_AircraftCrashDive_Constants.Version;
     private static bool firstUpdate = true;
+    private static bool previousAlarmState = false;
+    private static bool newAircraftAlarm = true;
     
     public override void Start()
     {
@@ -38,6 +42,12 @@ public class UBOATSOP_AircraftCrashDive : BackgroundTaskBase
         try
         {
             AddListeners();
+
+            if (playerShipProxy != null && playerShipProxy.CurrentShip != null)
+            {
+                previousAlarmState = playerShipProxy.CurrentShip.Alarmed;
+                if (!playerShipProxy.CurrentShip.Alarmed) newAircraftAlarm = true;
+            }
 
             firstUpdate = false;
 
@@ -70,9 +80,16 @@ public class UBOATSOP_AircraftCrashDive : BackgroundTaskBase
             if (playerShipProxy != null && playerShipProxy.CurrentShip != null)
             {
 
+                playerShipProxy.AlarmStarted -= ShipOnAlarmStarted;
+                playerShipProxy.AlarmStarted += ShipOnAlarmStarted;
+
+                playerShipProxy.AlarmStopped -= ShipOnAlarmStopped;
+                playerShipProxy.AlarmStopped += ShipOnAlarmStopped;
 
                 playerShipProxy.ObservationAdded -= ShipOnObservationAdded;
                 playerShipProxy.ObservationAdded += ShipOnObservationAdded;
+
+                
 
             }
 
@@ -81,6 +98,24 @@ public class UBOATSOP_AircraftCrashDive : BackgroundTaskBase
             Debug.LogException(ex);
         }
 
+    }
+
+    public static void ShipOnAlarmStarted()
+    {
+        if (playerShipProxy != null && playerShipProxy.CurrentShip != null)
+        {
+            Debug.Log($"== EVENT ShipOnAlarmStarted CURRENT {playerShipProxy.CurrentShip.Alarmed} PREVIOUS {previousAlarmState}");
+        }
+
+    }
+
+    public static void ShipOnAlarmStopped()
+    {
+        if (playerShipProxy != null && playerShipProxy.CurrentShip != null)
+        {
+            Debug.Log($"== EVENT ShipOnAlarmStopped CURRENT {playerShipProxy.CurrentShip.Alarmed} PREVIOUS {previousAlarmState}");
+            newAircraftAlarm = true;
+        }
     }
 
     public static void ShipOnObservationAdded(DirectObservationAddedEvent e)
@@ -99,13 +134,16 @@ public class UBOATSOP_AircraftCrashDive : BackgroundTaskBase
                     )
             {
                 //bool isAircraft = (e.Observation?.Entity is Aircraft);
-                Debug.Log($"== EVENT ShipOnObservationAdded OBS {e.Observator?.Name} ENT {e.Observation?.Entity?.Name} PREV {e.PreviousLostObservation?.PerceivedName} AIRCRAFT");
+                Debug.Log($"== EVENT ShipOnObservationAdded OBS {e.Observator?.Name} ENT {e.Observation?.Entity?.Name} PREV {e.PreviousLostObservation?.PerceivedName} AIRCRAFT SUB ALARMED {playerShipProxy.CurrentShip.Alarmed} SUB PREVIOUS ALARMED {previousAlarmState}");
 
                 var aircraft = (Aircraft)entity;
                 //var id = aircraft.GetInstanceID();
-                Debug.Log($"UBOATSOP_AircraftCrashDive ShipOnObservationAdded *** AIRCRAFT {aircraft.Name} ActiveEngines {aircraft.ActiveEngines} enabled {aircraft.enabled} FoldedUp {aircraft.FoldedUp} HasWorkingPropellers {aircraft.HasWorkingPropellers} isActiveAndEnabled {aircraft.isActiveAndEnabled} IsAwaken {aircraft.IsAwaken}");
-                if (!playerShipProxy.CurrentShip.Docked && !playerShipProxy.CurrentShip.SubmergedOrGoingToSubmerge && !aircraft.FoldedUp && !playerShipProxy.CurrentShip.Alarmed)
+                Debug.Log($"UBOATSOP_AircraftCrashDive ShipOnObservationAdded *** AIRCRAFT {aircraft.Name} ActiveEngines {aircraft.ActiveEngines} enabled {aircraft.enabled} FoldedUp {aircraft.FoldedUp} HasWorkingPropellers {aircraft.HasWorkingPropellers} isActiveAndEnabled {aircraft.isActiveAndEnabled} IsAwaken {aircraft.IsAwaken} SUB ALARM {playerShipProxy.CurrentShip.Alarmed}  SUB PREVIOUS ALARM {previousAlarmState}");
+
+                Debug.Log($"UBOATSOP_AircraftCrashDive ShipOnObservationAdded *** CONDITION CHECK *** SUB NOT DOCKED {!playerShipProxy.CurrentShip.Docked} SUB NOT SUBMERGING {!playerShipProxy.CurrentShip.SubmergedOrGoingToSubmerge} AIRCRAFT NOT FOLDEDUP {!aircraft.FoldedUp} SUB NOT PREVIOUS ALARM {!previousAlarmState} SUB NEW AIRCRAFT ALARM {newAircraftAlarm}");
+                if (!playerShipProxy.CurrentShip.Docked && !playerShipProxy.CurrentShip.SubmergedOrGoingToSubmerge && !aircraft.FoldedUp && !previousAlarmState && newAircraftAlarm)
                 {
+                    newAircraftAlarm = false;
                     CrashDive(DepthPreset.MaxSafeDepth);
                 }
             }

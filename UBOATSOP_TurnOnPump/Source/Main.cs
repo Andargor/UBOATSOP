@@ -88,7 +88,7 @@ public class UBOATSOP_TurnOnPump : BackgroundTaskBase, IUserMod
         {
             if (pump)
             {
-                TrimPump.ConnectedTank[] tanks = (TrimPump.ConnectedTank[])(TrimPump.ConnectedTank[])Traverse.Create(pump)?.Field("tanks")?.GetValue();
+                TrimPump.ConnectedTank[] tanks = (TrimPump.ConnectedTank[])Traverse.Create(pump)?.Field("tanks")?.GetValue();
 
                 if (tanks != null)
                 {
@@ -113,8 +113,7 @@ public class UBOATSOP_TurnOnPump : BackgroundTaskBase, IUserMod
         secondsElapsedSinceLastCheck += INTERVAL_UPDATE_SECONDS;
         if (secondsElapsedSinceLastCheck > float.MaxValue) secondsElapsedSinceLastCheck = 0;
 
-        if (playerShipProxy != null && playerShipProxy.CurrentShip != null
-                )
+        if (playerShipProxy != null && playerShipProxy.CurrentShip != null)
         {
             TrimPump equipment = playerShipProxy.CurrentShip.GetEquipment<TrimPump>("Trim Pump");
             if ((bool)(UnityEngine.Object)equipment)
@@ -142,7 +141,7 @@ public class UBOATSOP_TurnOnPump : BackgroundTaskBase, IUserMod
                     }
                 } else
                 {
-                    if (!equipment.IsWaterLeft && equipment.enabled)
+                    if (equipment.enabled && !equipment.IsWaterLeft)
                     {
                         UBOAT.Game.Scene.Characters.Activators.Activator component = equipment.GetComponent<UBOAT.Game.Scene.Characters.Activators.Activator>();
                         UBOAT.Game.Scene.Characters.Skills.CharacterActionInfo action = component.GetAction<SwitchPowerAction>((PlayableCharacter)null, true);
