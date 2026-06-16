@@ -1,1 +1,1 @@
-static class UBOATSOP_TonnageSunkProgress_Constants { public const string Version = "2024.1.22.12"; }
+static class UBOATSOP_TonnageSunkProgress_Constants { public const string Version = "2025.1.22.18"; }
